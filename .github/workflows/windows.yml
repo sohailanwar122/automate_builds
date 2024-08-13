@@ -26,52 +26,19 @@ jobs:
       - name: Build Windows app
         run: flutter build windows --release
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: windows-build
-          path: build/windows/runner/Release/app.exe
+      - name: Install MSIX Packaging Tool
+        run: |
+          choco install microsoft-msix-packaging-tool
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/windows/runner/Release/app.exe
-          asset_name: app.exe
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create MSIX Package
+        run: |
+          $packageName = "YourAppName" # Change this to your app's name
+          $version = "1.0.0.0" # Set your version
+          $packageOutputPath = "build/msix/${packageName}_${version}.msix"
+        
+          # Create the MSIX package
+          New-Item -Path "build/msix" -ItemType Directory -Force
+          & "$env:ProgramFiles\Windows Kits\10\bin\x64\MakeAppx.exe" pack /d "build/windows/runner/Release" /p $packageOutputPath
 
 
 
-
-#      - name: Create MSIX Package
-#        run: |
-#          # Install MSIX Packaging Tool
-#          choco install microsoft-msix-packaging-tool --version=1.2022.8.0
-#
-#          # Define paths
-#          EXE_PATH=build/windows/runner/Release/app.exe
-#          MSIX_PATH=build/windows/runner/Release/app.msix
-#
-#          # Create the MSIX package
-#          # Adjust the following command based on your needs
-#          MakeAppx pack /d $(dirname $EXE_PATH) /p $MSIX_PATH
-
-#      - name: Install Firebase CLI
-#        run: npm install -g firebase-tools
-#
-#      - name: Distribute to Firebase
-#        run: |
-#          firebase appdistribution:distribute build/windows/runner/Release/app.exe --app ${{ secrets.WINDOW_APPID }} --token ${{ secrets.FIREBASE_TOKEN }} --groups tester
