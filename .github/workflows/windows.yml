@@ -26,9 +26,23 @@ jobs:
       - name: Build Windows app
         run: flutter build windows --release
 
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
 
-      - name: Distribute to Firebase
+      - name: Create MSIX Package
         run: |
-          firebase appdistribution:distribute build/windows/runner/Release/app.exe --app ${{ secrets.WINDOW_APPID }} --token ${{ secrets.FIREBASE_TOKEN }} --groups tester
+      # Install MSIX Packaging Tool
+          choco install microsoft-msix-packaging-tool --version=1.2022.8.0
+
+       # Define paths
+          EXE_PATH=build/windows/runner/Release/app.exe
+          MSIX_PATH=build/windows/runner/Release/app.msix
+
+        # Create the MSIX package
+         # Adjust the following command based on your needs
+          MakeAppx pack /d $(dirname $EXE_PATH) /p $MSIX_PATH
+
+#      - name: Install Firebase CLI
+#        run: npm install -g firebase-tools
+#
+#      - name: Distribute to Firebase
+#        run: |
+#          firebase appdistribution:distribute build/windows/runner/Release/app.exe --app ${{ secrets.WINDOW_APPID }} --token ${{ secrets.FIREBASE_TOKEN }} --groups tester
