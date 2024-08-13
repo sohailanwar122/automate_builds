@@ -31,7 +31,4 @@ jobs:
 
       - name: Distribute to Firebase
         run: |
-          firebase appdistribution:distribute build/windows/runner/Release/app.exe ^
-            --app ${{ secrets.WINDOW_APPID }} ^
-            --token ${{ secrets.TOKEN }} ^
-            --groups tester
+          firebase appdistribution:distribute build/windows/runner/Release/app.exe --app ${{ secrets.WINDOW_APPID }} --token ${{ secrets.FIREBASE_TOKEN }} --groups tester
