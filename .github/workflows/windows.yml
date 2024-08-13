@@ -26,9 +26,13 @@ jobs:
       - name: Build Windows app
         run: flutter build windows --release
 
+      - name: Install Chocolatey
+        run: |
+          @powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+
       - name: Install MSIX Packaging Tool
         run: |
-          choco install microsoft-msix-packaging-tool
+          choco install microsoft-msix-packaging-tool --version=1.10.0 --yes
 
       - name: Create MSIX Package
         run: |
