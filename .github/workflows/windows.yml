@@ -31,6 +31,6 @@ jobs:
 
       - name: Distribute to App Center
         run: |
-          appcenter distribute release --app windows_apps/cryodrive_windows --file build/windows/runner/Release/app.exe --group windows_testers --token ${{ secrets.APPCENTER_TOKEN }}
+          appcenter distribute release --app windows_apps/cryodrive_windows --file build/windows/x64/runner/Release/automate_build.exe --group windows_testers --token ${{ secrets.APPCENTER_TOKEN }}
         env:
           APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
