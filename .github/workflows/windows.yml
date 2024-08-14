@@ -20,20 +20,32 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Set up Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+
+      - name: Install msix package
+        run: dart pub global activate msix
+
+
       - name: Install dependencies
         run: flutter pub get
 
       - name: Build Windows app
         run: flutter build windows --release
 
-      - name: Install Dart SDK
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: 'stable'
+
+      - name: Verify Dart and msix installation
+        run: |
+          dart --version
+          dart pub global list
+          where dart
+          where msix
+
 
       - name: Convert .exe to .msix
         run: |
-          dart pub global activate msix
           dart pub global run msix convert `
             --input build/windows/x64/runner/Release/automate_build.exe `
             --output build/msix/automate_build.msix `
@@ -41,11 +53,13 @@ jobs:
             --version "1.0.0"
         shell: pwsh
 
+
       - name: Install App Center CLI
         run: npm install -g appcenter-cli
 
+
       - name: Distribute to App Center
         run: |
-          appcenter distribute release --app windows_apps/cryodrive_windows --file build/msix/automate_build.msix  --group windows_testers --release-notes "New build with improvements" --token ${{ secrets.APPCENTER_TOKEN }}
+            appcenter distribute release --app windows_apps/cryodrive_windows --file build/msix/automate_build.msix  --group windows_testers --release-notes "New build with improvements" --token ${{ secrets.APPCENTER_TOKEN }}
         env:
           APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
