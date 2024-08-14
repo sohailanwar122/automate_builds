@@ -26,9 +26,10 @@ jobs:
       - name: Build Windows app
         run: flutter build windows --release
 
-      - name: Install MSIX Packaging Tool
+      - name: Install Windows SDK
         run: |
-          choco install msix-packaging-tool
+          Invoke-WebRequest -Uri https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/ -OutFile sdk_installer.exe
+          Start-Process -Wait -FilePath sdk_installer.exe -Args "/quiet /norestart"
 
       - name: Convert EXE to MSIX
         run: |
@@ -43,14 +44,18 @@ jobs:
             New-Item -Path $outputDir -ItemType Directory
           }
 
+          # Path to MakeAppx.exe
+          $makeAppxPath = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\MakeAppx.exe"
+
           # Use MakeAppx to create MSIX package
-          & "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\MakeAppx.exe" pack /d "build/windows/x64/runner/Release" /p $msixPath /l
+          & $makeAppxPath pack /d "build/windows/x64/runner/Release" /p $msixPath /l
 
       - name: Install App Center CLI
         run: npm install -g appcenter-cli
 
+
       - name: Distribute to App Center
         run: |
-          appcenter distribute release --app windows_apps/cryodrive_windows --file build/msix/YourAppName_1.0.0.0.msix --group Testers --token ${{ secrets.APPCENTER_TOKEN }}
+          appcenter distribute release --app windows_apps/cryodrive_windows --file build/msix/YourAppName_1.0.0.0.msix --group windows_testers --token ${{ secrets.APPCENTER_TOKEN }}
         env:
           APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
