@@ -25,6 +25,9 @@ jobs:
         with:
           sdk: 'stable'
 
+      - name: Install msix package
+        run: dart pub global activate msix
+
 
       - name: Install dependencies
         run: flutter pub get
@@ -33,15 +36,21 @@ jobs:
         run: flutter build windows --release
 
 
+      - name: Verify Dart and msix installation
+        run: |
+          dart --version
+          dart pub global list
+          where dart
+          where msix
 
-      # Install MSIX Packaging Tool via Chocolatey (if using a different tool)
-      - name: Install MSIX Packaging Tool
-        run: choco install msix-packaging-tool
 
-      # Convert .exe to .msix using PowerShell and MSIX Packaging Tool
       - name: Convert .exe to .msix
         run: |
-          & "C:\Program Files\Microsoft SDKs\MSIX Packaging Tool\MSIXPackagingTool.exe" /package "build/windows/x64/runner/Release/automate_build.exe" /output "build/msix/automate_build.msix" /version "1.0.0" /packageName "automate_build"
+          dart pub global run msix convert `
+            --input build/windows/x64/runner/Release/automate_build.exe `
+            --output build/msix/automate_build.msix `
+            --packageName "automate_build" `
+            --version "1.0.0"
         shell: pwsh
 
 
