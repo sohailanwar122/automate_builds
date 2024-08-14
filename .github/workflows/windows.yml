@@ -26,15 +26,11 @@ jobs:
           sdk: 'stable'
 
 
-
-
       - name: Install dependencies
         run: flutter pub get
 
       - name: Build Windows app
         run: flutter build windows --release
-
-
 
       # Install MSIX Packaging Tool via Chocolatey (if using a different tool)
       - name: Install MSIX Packaging Tool
