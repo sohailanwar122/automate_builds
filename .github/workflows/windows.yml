@@ -26,25 +26,11 @@ jobs:
       - name: Build Windows app
         run: flutter build windows --release
 
-      - name: Install Chocolatey
-        shell: pwsh
+      - name: Install App Center CLI
+        run: npm install -g appcenter-cli
+
+      - name: Distribute to App Center
         run: |
-          Set-ExecutionPolicy Bypass -Scope Process -Force
-          iex "& { $(irm https://chocolatey.org/install.ps1 -UseBasicP) }"
-
-      - name: Install MSIX Packaging Tool
-        run: |
-          choco install microsoft-msix-packaging-tool --version=1.10.0 --yes
-
-      - name: Create MSIX Package
-        run: |
-          $packageName = "YourAppName" # Change this to your app's name
-          $version = "1.0.0.0" # Set your version
-          $packageOutputPath = "build/msix/${packageName}_${version}.msix"
-        
-          # Create the MSIX package
-          New-Item -Path "build/msix" -ItemType Directory -Force
-          & "$env:ProgramFiles\Windows Kits\10\bin\x64\MakeAppx.exe" pack /d "build/windows/runner/Release" /p $packageOutputPath
-
-
-
+          appcenter distribute release --app windows_apps/cryodrive_windows --file build/windows/runner/Release/app.exe --group Testers --token ${{ secrets.APPCENTER_TOKEN }}
+        env:
+          APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
