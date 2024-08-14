@@ -24,13 +24,13 @@ jobs:
         run: flutter pub get
 
       - name: Build Windows app
-        run: flutter build windows --release
+        run: flutter build windows --rele ase
 
       - name: Install App Center CLI
         run: npm install -g appcenter-cli
 
       - name: Distribute to App Center
         run: |
-          appcenter distribute release --app windows_apps/cryodrive_windows --file build/windows/runner/Release/app.exe --group Testers --token ${{ secrets.APPCENTER_TOKEN }}
+          appcenter distribute release --app windows_apps/cryodrive_windows --file build/windows/runner/Release/app.exe --group windows_testers --token ${{ secrets.APPCENTER_TOKEN }}
         env:
           APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
