@@ -3,9 +3,9 @@ name: Build and Distribute Flutter Windows App
 on:
   push:
     branches:
-      - main
+      - helo
 
-jobs: 
+jobs:
   build:
     runs-on: windows-latest
 
@@ -32,23 +32,28 @@ jobs:
       - name: Build Windows app
         run: flutter build windows --release
 
-      # Install MSIX Packaging Tool via Chocolatey (if using a different tool)
-      - name: Install MSIX Packaging Tool
-        run: choco install msix-packaging-tool
-
-      # Convert .exe to .msix using PowerShell and MSIX Packaging Tool
-      - name: Convert .exe to .msix
-        run: |
-          & "C:\Program Files\Microsoft SDKs\MSIX Packaging Tool\MSIXPackagingTool.exe" /package "build/windows/x64/runner/Release/automate_build.exe" /output "build/msix/automate_build.msix" /version "1.0.0" /packageName "automate_build"
-        shell: pwsh
 
 
-      - name: Install App Center CLI
-        run: npm install -g appcenter-cli
 
 
-      - name: Distribute to App Center
-        run: |
-            appcenter distribute release --app windows_apps/cryodrive_windows --file build/msix/automate_build.msix  --group windows_testers --release-notes "New build with improvements" --token ${{ secrets.APPCENTER_TOKEN }}
-        env:
-          APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
+
+#      # Install MSIX Packaging Tool via Chocolatey (if using a different tool)
+#      - name: Install MSIX Packaging Tool
+#        run: choco install msix-packaging-tool
+#
+#      # Convert .exe to .msix using PowerShell and MSIX Packaging Tool
+#      - name: Convert .exe to .msix
+#        run: |
+#          & "C:\Program Files\Microsoft SDKs\MSIX Packaging Tool\MSIXPackagingTool.exe" /package "build/windows/x64/runner/Release/automate_build.exe" /output "build/msix/automate_build.msix" /version "1.0.0" /packageName "automate_build"
+#        shell: pwsh
+#
+#
+#      - name: Install App Center CLI
+#        run: npm install -g appcenter-cli
+#
+#
+#      - name: Distribute to App Center
+#        run: |
+#            appcenter distribute release --app windows_apps/cryodrive_windows --file build/msix/automate_build.msix  --group windows_testers --release-notes "New build with improvements" --token ${{ secrets.APPCENTER_TOKEN }}
+#        env:
+#          APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
